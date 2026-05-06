@@ -9,7 +9,6 @@ from sqlalchemy import Column, DateTime, Integer, String
 Base = declarative_base()
 
 class PaymenCrate(Base):
-    __tablename__ = 'Payments'
     id: uuid.UUID
     amount: Decimal
     currency: String
@@ -18,3 +17,10 @@ class PaymenCrate(Base):
     created_at: DateTime
     updated_at: DateTime
     idempotency_key: str
+
+class Outbox_events(Base):
+    id: uuid.UUID
+    event_type: str
+    payload: dict
+    created_at: DateTime
+    published: bool

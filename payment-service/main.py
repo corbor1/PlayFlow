@@ -1,10 +1,10 @@
 from fastapi import FastAPI
-from api import router
+from api import router as api_router
 
 app = FastAPI()
 
 # Подключение роутера
-app.include_router(router.router)
+app.include_router(api_router)
 
 
 @app.get("/")

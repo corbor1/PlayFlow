@@ -1,26 +1,31 @@
 from decimal import Decimal
 from typing import Optional
-from app.models import OrderStatus
+from datetime import datetime
 import uuid
+from pydantic import BaseModel, Field
+from app.models import OrderStatus
 
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, DateTime, Integer, String
+class PaymentCreate (BaseModel):
+    amount: Decimal = Field(... , description="Сумма платежа")
+    currency: str = Field(default="RUB", max_length=3, description="Валюта")
+    descriptional: Optional[str] = Field(None, max_length=500,description="Описание")
+    idempotency_key: str = Field (..., description="Ключ идемпотентности")
 
-Base = declarative_base()
-
-class PaymenCrate(Base):
+class PaymentResponse(PaymentCreate):
     id: uuid.UUID
-    amount: Decimal
-    currency: String
     status: OrderStatus
-    description: Optional[str]
-    created_at: DateTime
-    updated_at: DateTime
-    idempotency_key: str
+    created_at: datetime
+    updated_at: datetime
 
-class Outbox_events(Base):
+    class Config:
+        from_attributes = True
+
+class OutboxEventResponse(BaseModel):
     id: uuid.UUID
     event_type: str
     payload: dict
-    created_at: DateTime
-    published: bool
+    create_at: datetime
+    publisher: bool
+
+    class Config:
+        from_attributes = True

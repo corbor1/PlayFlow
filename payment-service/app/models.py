@@ -1,21 +1,14 @@
 from typing import Optional
-
-from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy import Numeric, String, Boolean, DateTime, JSON
+from sqlalchemy.orm import Mapped, mapped_column, declarative_base
+from sqlalchemy import JSON, Boolean, Numeric, String, DateTime, Enum as SQLAlchemyEnum
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql import func
-from sqlalchemy.orm import declarative_base
 import uuid
-
-from pydantic import BaseModel
-from datetime import datetime
 from decimal import Decimal
-import uuid
+from datetime import datetime
 import enum
-from enum import Enum
 
-from sqlalchemy import Column
-Base = BaseModel
+Base =  declarative_base()
 
 class OrderStatus(enum.Enum):
     PENDING = "PENDING"
@@ -24,12 +17,12 @@ class OrderStatus(enum.Enum):
     FAILED = "FAILED"
 
 class Payments(Base):
-    __tablename__ = "Payments"
+    __tablename__ = "payments"
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     amount: Mapped[Decimal] = mapped_column(Numeric(15, 2), nullable= False)
     currency:  Mapped[str] = mapped_column(String(3), nullable=False, default= "RUB")
-    status: Mapped[OrderStatus] = mapped_column(Enum(OrderStatus),nullable=False, default=OrderStatus.PENDING)
-    description: Mapped[Optional[str]] = mapped_column(String(500), nullable=False)
+    status: Mapped[OrderStatus] = mapped_column(SQLAlchemyEnum(OrderStatus), nullable=False, default=OrderStatus.PENDING)
+    description: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
     created_at: Mapped[DateTime] = mapped_column(DateTime, server_default=func.now(), nullable= False)
     updated_at: Mapped[DateTime] = mapped_column(DateTime, server_default=func.now(), onupdate=func.now(), nullable=False)
     idempotency_key: Mapped[str] = mapped_column(String(255), unique=True, nullable=False, index=True)

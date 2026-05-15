@@ -1,15 +1,16 @@
-FROM python:3.11-slim AS builder
+FROM python:3.11-slim
 
 WORKDIR /app
 
+# Копируем requirements и устанавливаем зависимости
 COPY requirements.txt .
-
 RUN pip install --no-cache-dir -r requirements.txt
 
-FROM 3.11-slim 
+# Копируем весь код приложения
+COPY . .
 
-WORKDIR /app
+# Открываем порт
+EXPOSE 8000
 
-COPY --from=builder /app /app/
-
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+# Запускаем без --reload
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

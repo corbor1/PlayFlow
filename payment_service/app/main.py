@@ -1,19 +1,24 @@
 from fastapi import FastAPI
-from payment_service.app.api.api import router as api_router
-from contextlib import contextmanager
+from app.api.api import router as api_router
+from contextlib import asynccontextmanager
 
-@contextmanager
-def lifespan ():
+@asynccontextmanager
+async def lifespan (app:FastAPI):
+    print("Starting up...")
     yield
+    print("Shutting down...")
 
 app = FastAPI(lifespan = lifespan)
 
 # Подключение роутера
 app.include_router(api_router)
 
-from config.config_models import DBConfig
+# if __name__ == '__main__':
+#     app.run(host='0.0.0.0', port=8000)
 
-config = DBConfig()
-print(config)
-host = config.host
-print(host)
+# from config.config_models import DBConfig
+
+# config = DBConfig()
+# print(config)
+# host = config.host
+# print(host)
